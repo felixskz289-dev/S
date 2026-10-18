@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Урок 7 · HSK 1 · Подготовка к проверочной</title>
+<style>
+:root{
+  --bg:#f6f4ef; --card:#ffffff; --ink:#2b2b2b; --muted:#8a8578;
+  --red:#c0392b; --green:#1e8e5a; --accent:#e67e22; --line:#e5e0d5;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55;}
+header{background:linear-gradient(135deg,#c0392b,#e67e22); color:#fff; padding:22px 16px; text-align:center;}
+header h1{font-size:1.35rem; letter-spacing:.5px;}
+header p{opacity:.9; font-size:.9rem; margin-top:4px;}
+nav{display:flex; gap:6px; padding:10px 12px; background:var(--card); position:sticky; top:0; z-index:50; border-bottom:1px solid var(--line); overflow-x:auto;}
+nav button{flex:1 0 auto; border:none; background:#f0ede6; padding:9px 14px; border-radius:20px; font-size:.85rem; cursor:pointer; white-space:nowrap; color:var(--muted); font-weight:600; transition:.15s;}
+nav button.active{background:var(--accent); color:#fff;}
+main{max-width:760px; margin:0 auto; padding:16px;}
+.page{display:none; animation:fade .25s;}
+.page.active{display:block;}
+@keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1}}
+h2{font-size:1.1rem; margin:14px 0 10px;}
+.hint{font-size:.82rem; color:var(--muted); margin-bottom:12px;}
+/* flashcards */
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px;}
+.card{perspective:800px; height:120px; cursor:pointer;}
+.card-inner{position:relative; width:100%; height:100%; transition:transform .4s; transform-style:preserve-3d;}
+.card.flipped .card-inner{transform:rotateY(180deg);}
+.face{position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,.07);}
+.face.front{background:var(--card); border:1px solid var(--line);}
+.face.front .hz{font-size:2rem; font-weight:700;}
+.face.back{background:#fff7ec; transform:rotateY(180deg); border:1px solid #f0d9b8;}
+.face.back .py{color:var(--red); font-weight:600;}
+.face.back .tr{font-size:.85rem; color:var(--muted);}
+.snd{position:absolute; top:6px; right:8px; border:none; background:none; font-size:1rem; cursor:pointer; opacity:.6;}
+/* dialogues */
+.dlg{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:14px;}
+.dlg h3{font-size:1rem; margin-bottom:2px;}
+.dlg .sub{font-size:.78rem; color:var(--muted); margin-bottom:10px;}
+.line{display:flex; align-items:flex-start; gap:8px; padding:7px 0; border-bottom:1px dashed var(--line);}
+.line:last-child{border-bottom:none;}
+.speaker{font-weight:700; color:var(--accent); min-width:18px;}
+.hz{font-size:1.15rem;}
+.py{font-size:.85rem; color:var(--red);}
+.ru{font-size:.82rem; color:var(--muted);}
+.line .spk{margin-left:auto; border:none; background:#f0ede6; border-radius:50%; width:32px; height:32px; cursor:pointer; flex:none;}
+/* fill blanks */
+.gap{display:inline-block; min-width:64px; border-bottom:2px solid var(--accent); text-align:center; font-size:1rem; padding:0 4px;}
+.gap input{width:70px; border:none; background:none; outline:none; font-size:1rem; text-align:center;}
+.gap.ok{border-color:var(--green);} .gap.bad{border-color:var(--red);}
+.checkbtn{background:var(--accent); color:#fff; border:none; padding:10px 22px; border-radius:24px; font-size:.95rem; cursor:pointer; font-weight:600;}
+.checkbtn:active{transform:scale(.97);}
+.result-msg{margin-top:8px; font-weight:600; font-size:.9rem;}
+/* builder */
+.chips{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0;}
+.chip{background:#f0ede6; border:1px solid var(--line); border-radius:20px; padding:7px 14px; cursor:pointer; font-size:1rem;}
+.chip:hover{background:#e8e2d4;}
+.slot{background:var(--card); border:2px dashed var(--accent); border-radius:12px; min-height:52px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; padding:8px; margin-bottom:8px;}
+.slot .chip{background:#fff7ec; border-color:#f0d9b8;}
+.task{background:#eef6f1; border-left:4px solid var(--green); padding:10px 12px; border-radius:8px; margin:10px 0; font-size:.95rem;}
+/* quiz */
+.opt{display:block; width:100%; text-align:left; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:11px 14px; margin-bottom:8px; font-size:1rem; cursor:pointer;}
+.opt.correct{background:#e4f5ec; border-color:var(--green);}
+.opt.wrong{background:#fdeceb; border-color:var(--red);}
+.qtext{font-size:1.05rem; margin:10px 0;}
+.big-score{text-align:center; padding:30px 10px;}
+.big-score .num{font-size:3rem; font-weight:800; color:var(--accent);}
+.bar{height:8px; background:#eee; border-radius:4px; overflow:hidden; margin:10px 0;}
+.bar>div{height:100%; background:var(--green); width:0; transition:width .4s;}
+footer{text-align:center; color:var(--muted); font-size:.75rem; padding:20px;}
+@media(max-width:480px){ .hz{font-size:1.05rem;} header h1{font-size:1.1rem;} }
+</style>
+</head>
+<body>
+<header>
+  <h1>Урок 7 · Даты и дни недели</h1>
+  <p>Подготовка к проверочной · HSK Standard Course 1</p>
+</header>
+<nav id="nav">
+  <button data-page="words" class="active">📇 Слова</button>
+  <button data-page="texts">💬 Диалоги</button>
+  <button data-page="practice">✏️ Практика</button>
+  <button data-page="test">📝 Тест</button>
+</nav>
+<main>
+
+<!-- ============ WORDS ============ -->
+<section class="page active" id="page-words">
+  <h2>Новые слова (14)</h2>
+  <p class="hint">Нажми на карточку, чтобы перевернуть. 🔊 — прослушать произношение.</p>
+  <div class="grid" id="cards"></div>
+</section>
+
+<!-- ============ TEXTS ============ -->
+<section class="page" id="page-texts">
+  <h2>Диалоги из урока</h2>
+  <p class="hint">Прослушай каждую реплику, потом закрой глаза и повтори вслух.</p>
+  <div id="dialogues"></div>
+  <h2>Вставь пропущенные слова</h2>
+  <p class="hint">Напиши иероглифами слово, которое пропущено. Проверь себя кнопкой.</p>
+  <div class="dlg" id="gapgame"></div>
+  <button class="checkbtn" onclick="checkGaps()">Проверить</button>
+  <div class="result-msg" id="gapresult"></div>
+</section>
+
+<!-- ============ PRACTICE ============ -->
+<section class="page" id="page-practice">
+  <h2>Собери дату по-кантонски... то есть по-китайски! 🇨🇳</h2>
+  <p class="hint">Нажимай на иероглифы в правильном порядке, чтобы составить фразу из задания. Ошибся — нажми на иероглиф в рамке, чтобы убрать его.</p>
+  <div class="task" id="buildTask"></div>
+  <div class="slot" id="slot"></div>
+  <div class="chips" id="bank"></div>
+  <button class="checkbtn" onclick="checkBuild()">Проверить</button>
+  <button class="checkbtn" style="background:#8a8578" onclick="nextBuild()">Другое задание</button>
+  <div class="result-msg" id="buildresult"></div>
+  <h2 style="margin-top:24px;">Быстрый перевод</h2>
+  <p class="hint">Как будет по-китайски? Выбери правильный вариант.</p>
+  <div id="quickquiz"></div>
+</section>
+
+<!-- ============ TEST ============ -->
+<section class="page" id="page-test">
+  <h2>Пробная проверочная</h2>
+  <p class="hint">10 вопросов: слова, даты, диалоги. Как на настоящей проверочной — без подсказок!</p>
+  <div id="testbox"></div>
+</section>
+
+</main>
+<footer>Урок 7 · 今天几号？ · Сделано для подготовки к проверочной</footer>
+
+<script>
+/* ---------- data ---------- */
+const words=[
+ {hz:"请",py:"qǐng",ru:"пожалуйста (вежл.)"},
+ {hz:"问",py:"wèn",ru:"спрашивать"},
+ {hz:"今天",py:"jīntiān",ru:"сегодня"},
+ {hz:"号",py:"hào",ru:"число (дата)"},
+ {hz:"月",py:"yuè",ru:"месяц"},
+ {hz:"星期",py:"xīngqī",ru:"неделя"},
+ {hz:"昨天",py:"zuótiān",ru:"вчера"},
+ {hz:"明天",py:"míngtiān",ru:"завтра"},
+ {hz:"去",py:"qù",ru:"идти, ехать"},
+ {hz:"学校",py:"xuéxiào",ru:"школа"},
+ {hz:"看",py:"kàn",ru:"смотреть, читать"},
+ {hz:"书",py:"shū",ru:"книга"},
+ {hz:"呢",py:"ne",ru:"а? (вопрос. частица)"},
+ {hz:"几",py:"jǐ",ru:"который? (вопрос. слово)"}
+];
+const texts=[
+ {title:"1 · 在银行 — В банке", lines:[
+  ["A","请问，今天几号？","Qǐngwèn, jīntiān jǐ hào?","Скажите, пожалуйста, какое сегодня число?"],
+  ["B","今天9月1号。","Jīntiān jiǔ yuè yī hào.","Сегодня первое сентября."],
+  ["A","今天星期几？","Jīntiān xīngqī jǐ?","Какой сегодня день недели?"],
+  ["B","星期三。","Xīngqī sān.","Среда."]]},
+ {title:"2 · 看日历 — Смотрим календарь", lines:[
+  ["A","昨天是几月几号？","Zuótiān shì jǐ yuè jǐ hào?","Какое вчера было число?"],
+  ["B","昨天是8月31号，星期二。","Zuótiān shì bā yuè sānshíyī hào, xīngqī èr.","Вчера было 31 августа, вторник."],
+  ["A","明天呢？","Míngtiān ne?","А завтра?"],
+  ["B","明天是9月2号，星期四。","Míngtiān shì jiǔ yuè èr hào, xīngqī sì.","Завтра 2 сентября, четверг."]]},
+ {title:"3 · 在咖啡馆儿 — В кофейне", lines:[
+  ["A","明天星期六，你去学校吗？","Míngtiān xīngqī liù, nǐ qù xuéxiào ma?","Завтра суббота. Ты пойдёшь в школу?"],
+  ["B","我去学校。","Wǒ qù xuéxiào.","Да, пойду."],
+  ["A","你去学校做什么？","Nǐ qù xuéxiào zuò shénme?","Что ты будешь делать в школе?"],
+  ["B","我去学校看书。","Wǒ qù xuéxiào kàn shū.","Пойду в школу почитать."]]}
+];
+const gaps=[
+ {before:"请",after:"，今天几号？",ans:"问",ru:"Скажите, пожалуйста, какое сегодня число?"},
+ {before:"昨天是8月31号，",after:"。",ans:"星期二",ru:"Вчера было 31 августа, вторник."},
+ {before:"明天",after:"？",ans:"呢",ru:"А завтра?"},
+ {before:"明天星期六，你",after:"学校吗？",ans:"去",ru:"Завтра суббота. Ты пойдёшь в школу?"},
+ {before:"我去学校看",after:"。",ans:"书",ru:"Пойду в школу почитать (читать книги)."}
+];
+const months=["一","二","三","四","五","六","七","八","九","十","十一","十二"];
+const wdays=["一","二","三","四","五","六","日"];
+const nums={1:"一",2:"二",3:"三",4:"四",5:"五",6:"六",7:"七",8:"八",9:"九",10:"十",11:"十一",12:"十二",13:"十三",14:"十四",15:"十五",16:"十六",17:"十七",18:"十八",19:"十九",20:"二十",21:"二十一",22:"二十二",23:"二十三",24:"二十四",25:"二十五",26:"二十六",27:"二十七",28:"二十八",29:"二十九",30:"三十",31:"三十一"};
+const cn2num={}; for(const k in nums) cn2num[nums[k]]=+k;
+const builds=[
+ {ru:"Сегодня 1 сентября.", ans:["今天","是","九","月","一","号"]},
+ {ru:"Какое сегодня число?", ans:["今天","几","号"]},
+ {ru:"Вчера было 31 августа.", ans:["昨天","是","八","月","三","十","一","号"]},
+ {ru:"Какой сегодня день недели?", ans:["今天","星期","几"]},
+ {ru:"Завтра 2 сентября, четверг.", ans:["明天","是","九","月","二","号","，","星期","四"]},
+ {ru:"Сегодня среда.", ans:["今天","星期","三"]},
+ {ru:"Завтра суббота, ты пойдёшь в школу?", ans:["明天","星期","六","，","你","去","学校","吗"]},
+ {ru:"Пойду в школу почитать.", ans:["我","去","学校","看","书"]}
+];
+const quick=[
+ {q:"вчера",opts:["明天","昨天","今天"],a:1},
+ {q:"завтра",opts:["今天","昨天","明天"],a:2},
+ {q:"школа",opts:["学习","学校","书"],a:1},
+ {q:"число (дата)",opts:["月","号","星期"],a:1},
+ {q:"неделя",opts:["星期","月","天"],a:0},
+ {q:"книга",opts:["看","书","去"],a:1},
+ {q:"сегодня",opts:["明天","昨天","今天"],a:2},
+ {q:"месяц",opts:["月","号","年"],a:0},
+ {q:"спрашивать",opts:["问","请","看"],a:0},
+ {q:"идти, ехать",opts:["来","去","走"],a:1}
+];
+const testPool=[
+ {type:"mc",q:"Как будет «сегодня»?",opts:["昨天","明天","今天","星期"],a:2},
+ {type:"mc",q:"Как будет «вчера»?",opts:["明天","昨天","今天","月"],a:1},
+ {type:"mc",q:"«Какое сегодня число?» — правильный порядок:",opts:["今天几号是？","今天几号？","几号今天？","是今天几号？"],a:1},
+ {type:"mc",q:"Что значит 星期三?",opts:["понедельник","вторник","среда","четверг"],a:2},
+ {type:"mc",q:"Как сказать «2 сентября»?",opts:["九月二号","二号九月","九月二日号","二九月号"],a:0},
+ {type:"mc",q:"В диалоге B отвечает: «我去学校看书». Что он будет делать?",opts:["писать письмо","читать книгу","спать","играть"],a:1},
+ {type:"mc",q:"Какая частица означает «а? / как насчёт?»",opts:["吗","呢","的","了"],a:1},
+ {type:"gap",q:"Вставь слово: 明天星期__，你去学校吗？",ans:"六",hint:"суббота"},
+ {type:"gap",q:"Вставь слово: 昨天是8月31号，星期__。",ans:"二",hint:"вторник"},
+ {type:"gap",q:"Вставь слово: 我去学校__书。",ans:"看",hint:"читать"},
+ {type:"gap",q:"Вставь слово: __天是9月2号。",ans:"明",hint:"завтра"},
+ {type:"gap",q:"Вставь слово: 今天9__1号。",ans:"月",hint:"сентябрь = девятый месяц"},
+ {type:"mc",q:"Как будет «завтра суббота»?",opts:["明天星期六","今天星期六","明天星期六号","星期明天六"],a:0},
+ {type:"mc",q:"«Пойду в школу» — это:",opts:["我去学校。","我去书。","我学校去。","我去家。"],a:0},
+ {type:"mc",q:"Сколько иероглифов в слове 学校?",opts:["1","2","3","4"],a:1}
+];
+
+/* ---------- speech ---------- */
+function speak(t){
+  try{const u=new SpeechSynthesisUtterance(t); u.lang="zh-CN"; u.rate=0.85; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){}
+}
+
+/* ---------- nav ---------- */
+document.querySelectorAll("#nav button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("#nav button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById("page-"+b.dataset.page).classList.add("active");
+    window.scrollTo({top:0,behavior:"smooth"});
+  };
+});
+
+/* ---------- flashcards ---------- */
+const cardsEl=document.getElementById("cards");
+words.forEach(w=>{
+  const c=document.createElement("div"); c.className="card";
+  c.innerHTML=`<div class="card-inner">
+    <div class="face front"><button class="snd">🔊</button><div class="hz">${w.hz}</div></div>
+    <div class="face back"><div class="py">${w.py}</div><div class="tr">${w.ru}</div></div></div>`;
+  c.onclick=e=>{ if(e.target.classList.contains("snd")){speak(w.hz); e.stopPropagation();} else c.classList.toggle("flipped"); };
+  cardsEl.appendChild(c);
+});
+
+/* ---------- dialogues ---------- */
+const dlgEl=document.getElementById("dialogues");
+texts.forEach(t=>{
+  const d=document.createElement("div"); d.className="dlg";
+  let h=`<h3>${t.title.split("—")[0]}</h3><div class="sub">${t.title.split("—")[1]||""} · нажми 🔊 и повтори вслух</div>`;
+  t.lines.forEach(l=>{ h+=`<div class="line"><span class="speaker">${l[0]}</span>
+    <div><div class="hz">${l[1]}</div><div class="py">${l[2]}</div><div class="ru">${l[3]}</div></div>
+    <button class="spk" onclick="speak('${l[1].replace(/'/g,"")}')">🔊</button></div>`; });
+  d.innerHTML=h; dlgEl.appendChild(d);
+});
+
+/* ---------- gaps ---------- */
+const gapEl=document.getElementById("gapgame");
+gaps.forEach((g,i)=>{
+  gapEl.innerHTML+=`<div class="line"><span class="speaker">${i+1}</span>
+    <div><span class="hz">${g.before}</span><span class="gap"><input data-a="${g.ans}" placeholder="……"></span><span class="hz">${g.after}</span>
+    <div class="ru">${g.ru}</div></div></div>`;
+});
+function checkGaps(){
+  let ok=0,total=0;
+  gapEl.querySelectorAll("input").forEach(inp=>{
+    total++;
+    const v=inp.value.trim(), a=inp.dataset.a;
+    const gap=inp.parentElement;
+    gap.classList.remove("ok","bad");
+    if(v===a){ok++; gap.classList.add("ok");} else gap.classList.add("bad");
+  });
+  document.getElementById("gapresult").innerHTML =
+    ok===total ? `<span style="color:var(--green)">Отлично! Всё верно: ${ok}/${total} 🎉</span>`
+               : `<span style="color:var(--red)">Пока ${ok}/${total}. Проверь красные поля и попробуй ещё раз.</span>`;
+}
+
+/* ---------- builder ---------- */
+let curBuild=0, built=[];
+function shuffle(a){a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a;}
+function renderBuild(){
+  const t=builds[curBuild];
+  document.getElementById("buildTask").innerHTML="Задание: <b>"+t.ru+"</b>";
+  document.getElementById("slot").innerHTML="";
+  document.getElementById("buildresult").innerHTML="";
+  built=[];
+  const bank=document.getElementById("bank"); bank.innerHTML="";
+  const extra=["我","是","吗","，"];
+  shuffle([...t.ans, ...shuffle(extra).slice(0,3)]).forEach(ch=>{
+    const b=document.createElement("button"); b.className="chip"; b.textContent=ch;
+    b.onclick=()=>{ built.push(ch); renderSlot(); };
+    bank.appendChild(b);
+  });
+  renderSlot();
+}
+function renderSlot(){
+  const s=document.getElementById("slot"); s.innerHTML="";
+  built.forEach((ch,i)=>{
+    const b=document.createElement("button"); b.className="chip"; b.textContent=ch;
+    b.onclick=()=>{ built.splice(i,1); renderSlot(); };
+    s.appendChild(b);
+  });
+}
+function checkBuild(){
+  const t=builds[curBuild];
+  const good = built.join("")===t.ans.join("");
+  document.getElementById("buildresult").innerHTML = good
+    ? `<span style="color:var(--green)">Верно! ${t.ans.join("")} ✅</span>`
+    : `<span style="color:var(--red)">Пока не так. Подсказка: правильный ответ — ${t.ans.join("")}</span>`;
+}
+function nextBuild(){ curBuild=(curBuild+1)%builds.length; renderBuild(); }
+renderBuild();
+
+/* ---------- quick quiz ---------- */
+const qq=document.getElementById("quickquiz");
+function renderQuick(){
+  const q=quick[Math.floor(Math.random()*quick.length)];
+  qq.innerHTML=`<div class="qtext">«${q.q}» — это…</div>`;
+  shuffle(q.opts.map((o,i)=>({o,ok:i===q.a}))).forEach(x=>{
+    const b=document.createElement("button"); b.className="opt"; b.textContent=x.o;
+    b.onclick=()=>{ qq.querySelectorAll(".opt").forEach(y=>y.disabled=true);
+      if(x.ok){b.classList.add("correct"); setTimeout(renderQuick,800);}
+      else{b.classList.add("wrong"); setTimeout(renderQuick,1200);} };
+    qq.appendChild(b);
+  });
+}
+renderQuick();
+
+/* ---------- test ---------- */
+const tb=document.getElementById("testbox");
+let tqs=[], tscore=0, tstep=0;
+function startTest(){
+  tqs=shuffle(testPool).slice(0,10); tscore=0; tstep=0;
+  renderTestQ();
+}
+function renderTestQ(){
+  if(tstep>=tqs.length){ return showScore(); }
+  const q=tqs[tstep];
+  let h=`<div class="qtext">Вопрос ${tstep+1} из ${tqs.length}</div><div class="bar"><div style="width:${tstep/tqs.length*100}%"></div></div>`;
+  h+=`<div class="qtext">${q.q}</div>`;
+  tb.innerHTML=h;
+  if(q.type==="mc"){
+    shuffle(q.opts.map((o,i)=>({o,ok:i===q.a}))).forEach(x=>{
+      const b=document.createElement("button"); b.className="opt"; b.textContent=x.o;
+      b.onclick=()=>{ tb.querySelectorAll(".opt").forEach(y=>y.disabled=true);
+        if(x.ok){b.classList.add("correct"); tscore++;}
+        else{b.classList.add("wrong");}
+        setTimeout(()=>{tstep++; renderTestQ();},900); };
+      tb.appendChild(b);
+    });
+  } else {
+    const wrap=document.createElement("div");
+    wrap.innerHTML=`<div class="gap" style="min-width:90px"><input id="tgap" placeholder="……" style="width:90px"></div>
+      <div style="margin-top:10px"><button class="checkbtn" id="tgo">Ответить</button></div>`;
+    tb.appendChild(wrap);
+    const inp=wrap.querySelector("#tgap"); inp.focus();
+    const go=()=>{
+      const ok=inp.value.trim()===q.ans; tstep++;
+      wrap.querySelector(".gap").classList.add(ok?"ok":"bad");
+      if(ok)tscore++;
+      setTimeout(renderTestQ, ok?700:1600);
+    };
+    wrap.querySelector("#tgo").onclick=go;
+    inp.onkeydown=e=>{if(e.key==="Enter")go();};
+  }
+}
+function showScore(){
+  const pct=Math.round(tscore/tqs.length*100);
+  const grade = pct>=90?"Пять с плюсом! К проверочной готов(а). 🏆"
+              : pct>=70?"Хороший результат! Повтори ошибки на вкладке «Диалоги». 💪"
+              : pct>=50?"Неплохо, но стоит ещё потренироваться. Пройди «Слова» и «Практику» ещё раз."
+              :"Стоит повторить слова и диалоги, потом вернись к тесту. Ты справишься!";
+  tb.innerHTML=`<div class="big-score">
+    <div style="font-size:.9rem;color:var(--muted)">ТВОЙ РЕЗУЛЬТАТ</div>
+    <div class="num">${tscore} / ${tqs.length}</div>
+    <div class="bar" style="max-width:280px;margin:14px auto"><div style="width:${pct}%"></div></div>
+    <p style="margin:12px 0 18px">${grade}</p>
+    <button class="checkbtn" onclick="startTest()">Пройти ещё раз</button></div>`;
+}
+startTest();
+</script>
+</body>
+</html>
